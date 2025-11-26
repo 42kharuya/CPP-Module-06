@@ -1,9 +1,9 @@
 NAME			=	ex00.out
 
 CXX				=	c++
-CXXFLAGS		=	-Wall -Wextra -Werror -std=c++98 -pedantic
+CXXFLAGS		=	-Wall -Wextra -Werror -fsanitize=address -g -o -std=c++98 -pedantic
 
-SRCS			=	main.cpp
+SRCS			=	main.cpp ScalarConverter.cpp
 
 OBJS_PATH		=	objs/
 OBJS			=	$(SRCS:%.cpp=objs/%.o)
