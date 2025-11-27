@@ -7,6 +7,7 @@
 #include <limits>
 #include <cerrno>
 #include <cstdlib>
+#include <cmath>
 
 #define SCALAR_TYPE_CHAR 0
 #define SCALAR_TYPE_INT 1

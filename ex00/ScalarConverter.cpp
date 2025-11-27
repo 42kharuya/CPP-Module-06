@@ -24,7 +24,7 @@
 // static bool isFloat(std::string &input) {
 // 	bool	dot = false;
 
-// 	if (ft_isinff(input))
+// 	if (ftIsInff(input))
 // 		return true;
 // 	if (input[input.length() - 1] != 'f' || input[input.length() - 2] == '.')
 // 		return false;
@@ -44,7 +44,7 @@
 // static bool isDouble(std::string &input) {
 // 	bool	dot = false;
 
-// 	if (ft_isinf(input))
+// 	if (ftIsInf(input))
 // 		return true;
 // 	if (input[input.length() - 1] == '.')
 // 		return false;
@@ -152,6 +152,22 @@
 
 #include "ScalarConverter.hpp"
 
+bool	ftIsprint(char c) {
+	return (c >= 32 && c <= 126);
+}
+
+bool	ftIsInff(const std::string &input) {
+	if (input == "-inff" || input == "+inff" || input == "nanf" || input == "inff")
+		return true;
+	return false;
+}
+
+bool	ftIsInf(const std::string &input) {
+	if (input == "-inf" || input == "+inf" || input == "nan" || input == "inf")
+		return true;
+	return false;
+}
+
 static bool isChar(const std::string &input) {
 	if (input.length() != 1
 		|| std::isdigit(input[0]))
@@ -178,7 +194,7 @@ static bool isFloat(const std::string &input, bool *intOverflowFlag) {
     errno = 0;
 
     float val = std::strtof(input.c_str(), &endptr);
-    if (endptr == input.c_str() || (*endptr != 'f' && *(endptr + 1) != '\0'))
+    if (endptr == input.c_str() || *endptr != 'f' || *(endptr + 1) != '\0')
         return false;
     if (errno == ERANGE
 		|| static_cast<int>(val) > std::numeric_limits<int>::max()
@@ -214,10 +230,6 @@ static int getType(const std::string &input, bool *intOverflowFlag) {
 		return -1;
 }
 
-bool	ftIsprint(char c) {
-	return (c >= 32 && c <= 126);
-}
-
 static void outputChar(const char c)
 {
 	if (ftIsprint(c))
@@ -244,17 +256,11 @@ static void outputInt(const std::string &input, bool intOverflowFlag)
 	}
 	if (number >= 1000000 || number <= -1000000) {
 		std::cout << "float: " << static_cast<float>(number) << "f" << std::endl;
-	std::cout << "double: " << static_cast<double>(number) <<std::endl;
+		std::cout << "double: " << static_cast<double>(number) <<std::endl;
 	} else {
 		std::cout << "float: " << static_cast<float>(number) << ".0f" << std::endl;
 		std::cout << "double: " << static_cast<double>(number) << ".0" <<std::endl;
 	}
-}
-
-bool	ft_isinff(const std::string &input) {
-	if (input == "-inff" || input == "+inff" || input == "nanf" || input == "inff")
-		return true;
-	return false;
 }
 
 static void	outputinff(const std::string &str){
@@ -268,38 +274,42 @@ static void	outputinff(const std::string &str){
 	std::cout << std::endl;
 }
 
+static bool isDecimalPartZero(double d) {
+	float integral_part;
+    double fractional_part = std::modf(d, &integral_part);
+
+    const double EPSILON = 0.0000001f;
+    if (fractional_part > EPSILON)
+      return false;
+    else
+      return true;
+}
+
 static void outputFloat(const std::string &input, bool intOverflowFlag)
 {
-	if (ft_isinff(input))
+	float fnum = std::strtof(input.c_str(), NULL);
+
+	if (ftIsInff(input))
 		return outputinff(input);
 	if (intOverflowFlag) {
 		std::cout << "char: impossible" << std::endl;
 		std::cout << "Int: impossible" << std::endl;
 	} else {
-		int int_num = static_cast<int>(std::strtol(input.c_str(), NULL, 10));
+		int int_num = static_cast<int>(fnum);
 		if (!ftIsprint(int_num))
 			std::cout << "char: Non displayable" << std::endl;
 		else
 			std::cout << "char: '" << static_cast<char>(int_num) << "'" << std::endl;
 		std::cout << "Int: " << int_num << std::endl;
 	}
-	float fnum = std::strtof(input.c_str(), NULL);
-	double dnum = std::strtod(input.c_str(), NULL);
-	if (fnum >= 1000000.0f || fnum <= -1000000.0f)
+
+	if (fnum >= 1000000.0f || fnum <= -1000000.0f || !isDecimalPartZero(static_cast<double>(fnum))) {
 			std::cout << "float: " << fnum << "f" << std::endl;
-	else
+			std::cout << "double: " << static_cast<double>(fnum) << std::endl;
+	} else {
 		std::cout << "float: " << fnum << ".0f" << std::endl;
-	if (dnum >= 1000000.0 || dnum <= -1000000.0)
-			std::cout << "float: " << dnum << std::endl;
-	else
-		std::cout << "float: " << dnum << ".0" << std::endl;
-}
-
-
-bool	ft_isinf(const std::string &input) {
-	if (input == "-inf" || input == "+inf" || input == "nan" || input == "inf")
-		return true;
-	return false;
+		std::cout << "double: " << static_cast<double>(fnum) << ".0" << std::endl;
+	}
 }
 
 static void	outputinf(const std::string &str) {
@@ -311,29 +321,29 @@ static void	outputinf(const std::string &str) {
 
 static void outputDouble(const std::string &input, bool intOverflowFlag)
 {
-	if (ft_isinf(input))
+	double dnum = std::strtod(input.c_str(), NULL);
+
+	if (ftIsInf(input))
 		return outputinf(input);
 	if (intOverflowFlag) {
 		std::cout << "char: impossible" << std::endl;
 		std::cout << "int: impossible" << std::endl;
 	} else {
-		int int_num = static_cast<int>(std::strtol(input.c_str(), NULL, 10));
+		int int_num = static_cast<int>(dnum);
 		if (!ftIsprint(int_num))
 			std::cout << "char: Non displayable" << std::endl;
 		else
 			std::cout << "char: '" << static_cast<char>(int_num) << "'" << std::endl;
 		std::cout << "int: " << int_num << std::endl;
 	}
-	float fnum = std::strtof(input.c_str(), NULL);
-	double dnum = std::strtod(input.c_str(), NULL);
-	if (fnum >= 1000000.0f || fnum <= -1000000.0f)
-			std::cout << "float: " << fnum << "f" << std::endl;
-	else
-		std::cout << "float: " << fnum << ".0f" << std::endl;
-	if (dnum >= 1000000.0 || dnum <= -1000000.0)
-			std::cout << "float: " << dnum << std::endl;
-	else
-		std::cout << "float: " << dnum << ".0" << std::endl;
+
+	if (dnum >= 1000000.0 || dnum <= -1000000.0 || !isDecimalPartZero(dnum)) {
+			std::cout << "float: " << static_cast<float>(dnum) << "f" << std::endl;
+			std::cout << "double: " << dnum << std::endl;
+	} else {
+		std::cout << "float: " << static_cast<float>(dnum) << ".0f" << std::endl;
+		std::cout << "double: " << dnum << ".0" << std::endl;
+	}
 }
 
 
@@ -372,4 +382,3 @@ ScalarConverter& ScalarConverter::operator=(const ScalarConverter &other) {
     return *this;
 }
 
-// outputDouble()とoutputFloat()にて10000.1や10000.1fのときと10000.0、10000.0fのときで,0の場合は.0が省略されてしまうので、これを修正する。(Gemini参照)
