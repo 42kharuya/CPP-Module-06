@@ -9,4 +9,3 @@ int main(int ac, char *av[]) {
 	ScalarConverter::convert(std::string(av[1]));
 	return EXIT_SUCCESS;
 }
-

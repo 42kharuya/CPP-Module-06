@@ -1,9 +1,9 @@
-NAME			=	ex01.out
+NAME			=	ex02.out
 
 CXX				=	c++
 CXXFLAGS		=	-Wall -Wextra -Werror -std=c++98 -pedantic
 
-SRCS			=	main.cpp Serializer.cpp Data.cpp
+SRCS			=	main.cpp Base.cpp
 
 OBJS_PATH		=	objs/
 OBJS			=	$(SRCS:%.cpp=objs/%.o)

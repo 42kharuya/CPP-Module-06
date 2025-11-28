@@ -229,4 +229,3 @@ ScalarConverter& ScalarConverter::operator=(const ScalarConverter &other) {
 	static_cast<void>(other);
     return *this;
 }
-
