@@ -10,4 +10,3 @@ int main(int ac, char *av[]) {
 	return EXIT_SUCCESS;
 }
 
-// ex01ではエラーメッセージをex01に置き換える。
