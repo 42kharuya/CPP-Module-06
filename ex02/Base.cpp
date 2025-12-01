@@ -40,17 +40,21 @@ void identify(Base &p) {
         A& a = dynamic_cast<A&>(p);
         std::cout << "This is 'A'" << std::endl;
         (void)a;
+        return ;
     } catch (const std::exception &e) {}
 
     try {
         B& b = dynamic_cast<B&>(p);
         std::cout << "This is 'B'" << std::endl;
         (void)b;
+        return ;
     } catch (const std::exception &e) {}
 
     try {
         C& c = dynamic_cast<C&>(p);
         std::cout << "This is 'C'" << std::endl;
         (void)c;
+        return ;
     } catch (const std::exception &e) {}
+    std::cout << "Unknown Type" << std::endl;
 }
