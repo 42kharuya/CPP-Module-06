@@ -17,5 +17,7 @@ int main()
 			std::cout << "Same ptr." << std::endl;
 		else
 			std::cout << "Different ptr." << std::endl;
+
+		delete data1;
 	}
 }
